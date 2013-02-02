@@ -6,6 +6,8 @@ import (
 	"log"
 )
 
+// TODO
+// Need to make this configurable
 var (
 	uri          = "amqp://guest:guest@localhost:5672/"
 	exchangeName = "msgbox"
@@ -65,7 +67,7 @@ func declareTopology(connection *amqp.Connection) error {
 	// Create the "incoming_messages" queue
 	// This holds all the unprocessed incoming messages
 	// received by the relay
-	i_state, err := channel.QueueDeclare(
+	channel.QueueDeclare(
 		"incoming_messages", // name of the queue
 		true,                // durable
 		false,               // delete when usused
@@ -73,10 +75,6 @@ func declareTopology(connection *amqp.Connection) error {
 		false,               // noWait
 		nil,                 // arguments
 	)
-	if err != nil {
-		return fmt.Errorf("Queue Declare: %s", err)
-	}
-	log.Printf("Declared Queue: %s", *&i_state.Messages)
 
 	if err = channel.QueueBind(
 		"incoming_messages", // name of the queue
@@ -91,7 +89,7 @@ func declareTopology(connection *amqp.Connection) error {
 	// Create the "outgoing_messages" queue
 	// This holds all the unprocessed outgoing messages
 	// that have not been sent yet
-	o_state, err := channel.QueueDeclare(
+	channel.QueueDeclare(
 		"outgoing_messages", // name of the queue
 		true,                // durable
 		false,               // delete when usused
@@ -99,10 +97,6 @@ func declareTopology(connection *amqp.Connection) error {
 		false,               // noWait
 		nil,                 // arguments
 	)
-	if err != nil {
-		return fmt.Errorf("Queue Declare: %s", err)
-	}
-	log.Printf("Declared Queue: %s", *&o_state.Messages)
 
 	if err = channel.QueueBind(
 		"outgoing_messages", // name of the queue
